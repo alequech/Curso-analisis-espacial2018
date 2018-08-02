@@ -1,0 +1,25 @@
+Descripción de la base de datos del índice de marginación urbana 2010.,
+,
+Variable,Descripción
+CVEGEO,Clave completa de la AGEB
+CVE_ENT,Clave de la entidad federativa
+CVE_MUN,Clave del municipio
+CVE_LOC,Clave de la localidad
+CVE_AGEB,Clave de la AGEB
+POB_2010,Población total 2010
+IND1,Porcentaje de población de 6 a 14 años que no asiste a la escuela
+IND2,Porcentaje de población de 15 años o más sin secundaria completa
+IND3,Porcentaje de población sin derechohabiencia a los servicios de salud
+IND4,Porcentaje de hijos fallecidos de las mujeres de 15 a 49 años
+IND5,Porcentaje de viviendas particulares sin agua entubada dentro de la vivienda
+IND6,Porcentaje de viviendas particulares sin drenaje conectado a la red pública o fosa séptica
+IND7,Porcentaje de viviendas particulares sin excusado con conexión de agua
+IND8,Porcentaje de viviendas particulares con piso de tierra
+IND9,Porcentaje de viviendas particulares con algún nivel de hacinamiento
+IND10,Porcentaje de viviendas particulares sin refrigerador
+CVE_SUN,Clave en el Sistema Urbano Nacional
+NOM_SUN,Nombre de la ciudad en el Sistema Urbano Nacional
+IMU2010,Índice de marginación urbana 2010
+GMU2010,Grado de marginación urbana 2010
+LUGAR_EDO,Lugar que ocupa en el contexto estatal
+LUGAR_NAC,Lugar que ocupa en el contexto nacional
