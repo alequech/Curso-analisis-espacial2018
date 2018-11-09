@@ -1,0 +1,151 @@
+---
+title: "Manipulación de datos vectoriales"
+author: "Alexander Quevedo"
+date: "10 de febrero de 2018"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Este manual toma como referencia la publicación realizada por [Robin Lovelace y colaboradores](https://geocompr.robinlovelace.net/), de donde se replicarón algunos ejercicios con fines académicos.  
+
+## Primeros pasos en R
+
+Debemos inciar cargando los paquetes necesarios para esto emplearemos el comanto `library()`.
+
+```{r library}
+library(sf)
+library(sp)
+library(spData)
+library(spDataLarge)
+library(tidyverse)
+library(mapview)
+library(units)
+```
+
+A continuación vamos a explorar el conjunto de datos *world*, incluido en la libreria **spData**.
+Los objetos de característica simples en R se almacenan en un marco de datos, con datos geográficos que ocupan una columna especial, una 'columna de lista'. Esta columna generalmente se llama `geom` o `geometry`. 
+
+```{r}
+names(world)
+```
+
+La columna *geom* contiene todas las coordenadas. Ahora vamos a realizar un plot del conjunto de datos *world* 
+
+```{r}
+plot(world)
+```
+
+Puede crear rápidamente mapas básicos con la función base _plot()_. Por defecto, la libreria _sf_ crea un diagrama de varios paneles. A continuación crearemos tres mapas seleccionando las columnas 3 y 4. Posteriormente  seleccionaremos la columna llamada _pop_ 
+ 
+```{r}
+plot(world[3:4])
+plot(world["pop"])
+```
+
+Es posible explorar de manera ágil las estadísticas de cada una de las columnas contenidas en el conjunto de datos.  
+
+```{r}
+summary(world["lifeExp"])
+```
+```{r}
+hist(world$lifeExp)
+```
+La selección de entidades también se puede realizar de manera ágil. Al observar el mapa de población se puedo observar que el continente asiático, se encontraba en el limite superior. Vamos a realizar una selección de los países que pertenecen a este continente.  
+
+```{r}
+asia <- world[world$continent == "Asia", ]
+plot(asia)
+```
+
+
+## Datos de población del censo 2010
+Ahora vamos a cargar datos vectoriales en del censo de población y vivienda de México del año 2010.  
+
+El  primer paso consiste en definir un directorio de trabajo. En este caso el lugar en el cual esta guardada información del archivo practica1, para esto debemos emplear el comando  `setwd()`. 
+En el caso de sistemas operativos Linux o mac debe indicarse la siguiente manera  `setwd("/Users/alequech/Google Drive/1_Datos_Vectoriales")`, en caso del sistema operativo Windows la ruta se indica de la siguiente manera `C:/Users/Rocket/Google Drive/1_Datos_Vectoriales`.
+
+```{r}
+setwd("/Users/alequech/Google Drive/Materias/Analisis_espacial/1_Datos_Vectoriales")
+```
+
+Las características sociodemográficas de México por municipio para el año 2010, fueron obtenidas atreves del portal http://www.conabio.gob.mx/informacion/gis/. 
+
+```{r}
+dem10gw<-st_read("input/dem10gw.shp")
+```
+Una manera sencilla de explorar los datos es mediante la función `head` 
+
+
+```{r}
+head(dem10gw)
+```
+```{r}
+plot(dem10gw["POTO10"],graticule = st_crs(dem10gw), axes = TRUE)
+```
+```{r}
+estados <- group_by(dem10gw,EDO_NOM) %>% summarize(pop = sum(POTO10, na.rm = TRUE))
+```
+Realizaremos una selección para los municipios pertenecientes al estado de Michoacán. 
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+michoacan<-dem10gw[dem10gw$CVE_ENT == 16, ]
+head(michoacan)
+tail(michoacan)
+```
+
+Una vez seleccionado seleccionado el estado de Michoacán, revisemos los datos del sistema de referencia. Para esto vamos a emplear la instrucción `st_crs`(_crs_ son las iniciales de _coordinate reference system_ ).
+
+```{r}
+st_crs(michoacan)
+```
+Los datos arrojados por la instrucción anterior se encuentran en dos formatos, el primero es el parámetro `EPGS` ( ver http://www.epsg.org/); `proj4string` el cual proporciona mayor información sobre el elipsoide de referencia y el  tipo de proyección. Para mayor información acerca del manejo de estos parámetros consulte https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/OverviewCoordinateReferenceSystems.pdf.
+
+En el caso de México el INEGI (Instituto Nacional de Estadística y Geografía) en su pagina http://www.inegi.org.mx/geo/contenidos/geodesia/sis_coor.aspx , podrá encontrar los parámetros de coordenadas y sistemas de referencia oficiales.  
+ 
+Emplearemos estos parámetros  para proyectar, la información del estado de Michoacán empleando la intrucción `st_transform()`.  
+ 
+```{r}
+michoacan_lcc<-st_transform(michoacan,6372)
+st_crs(michoacan_lcc)
+plot(michoacan_lcc["POTO10"],graticule = st_crs(michoacan), axes = TRUE)
+plot(michoacan_lcc["POTO10"],graticule = st_crs(6372), axes = TRUE)
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+mapview(michoacan_lcc)
+```
+Ahora realizaremos un calculo de densidad poblacional para esto calcularemos primero el área. 
+```{r}
+michoacan_lcc$AREA<-st_area(michoacan_lcc)
+michoacan_lcc$AREA<-set_units(michoacan_lcc$AREA, km^2)
+michoacan_lcc$pob_dens<-michoacan_lcc$POTO10 / michoacan_lcc$AREA
+plot(michoacan_lcc["pob_dens"])
+```
+
+Agregaremos la población de cada uno de los municipios de acuerdo al grado de marginación.  
+
+```{r}
+estado <- aggregate(x = michoacan_lcc[, "POTO10"], by = list(michoacan_lcc$GRMA10), FUN = sum, na.rm = TRUE)
+estado$POTO10
+```
+
+##Ejercicio 
+1. Proyecte los datos de población de todo el país al sistema de coordenadas Cónico Conforme de Lambert.
+3. Calcule la población total en cada uno de los grados de marginación para todo el país.
+4. Estime la densidad de población para cada uno de los grados de marginación. 
+
+
+
+
+
+
+ 
+
