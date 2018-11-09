@@ -3,7 +3,7 @@ rm(list=ls(all=TRUE))
 packages<-c("sf","sp","rgdal","rgl","rgeos","maptools","animation","igraph",
 	"plyr","msm","png","fields","tiff","gstat","lattice","latticeExtra","gridExtra",
 	"ggplot2","snow","maps","fBasics","data.table","raster","rasterVis","knitr",
-	"htmltools","caTools","bitops","mapview","jpeg","gWidgets","leaflet","spData","tidyverse")
+	"htmltools","caTools","bitops","mapview","jpeg","gWidgets","leaflet","spData","tidyverse","caret")
 
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
@@ -14,7 +14,7 @@ ipak <- function(pkg){
 
 # usage
 ipak(packages)
-install.packages("spDataLarge", repos = "https://nowosad.github.io/drat/", type = "source")
+install.packages("spDataLarge", type = "source")
 
 ###############################
 #########END OF SCRIPT#########
