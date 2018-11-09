@@ -5,6 +5,7 @@ date: "10 de febrero de 2018"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
