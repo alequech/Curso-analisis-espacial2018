@@ -72,7 +72,7 @@ El  primer paso consiste en definir un directorio de trabajo. En este caso el lu
 En el caso de sistemas operativos Linux o mac debe indicarse la siguiente manera  `setwd("/Users/alequech/Google Drive/1_Datos_Vectoriales")`, en caso del sistema operativo Windows la ruta se indica de la siguiente manera `C:/Users/Rocket/Google Drive/1_Datos_Vectoriales`.
 
 ```{r}
-setwd("/Users/alequech/Google Drive/1.Materias/Analisis_espacial/1_Datos_Vectoriales")
+setwd("/Users/alequech/Google Drive/Materias/Analisis_espacial/1_Datos_Vectoriales")
 ```
 
 Las características sociodemográficas de México por municipio para el año 2010, fueron obtenidas atreves del portal http://www.conabio.gob.mx/informacion/gis/. 
